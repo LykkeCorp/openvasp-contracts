@@ -23,7 +23,6 @@ contract VASP is Initializable, Context, Ownable, AdministratorRole, IVASP {
 
     uint8[] private _channels;
     string private _email;
-    bytes8 private _code;
     string private _handshakeKey;
     AddressUtils.AddressSet private _identityClaims;
     string private _name;
@@ -108,15 +107,6 @@ contract VASP is Initializable, Context, Ownable, AdministratorRole, IVASP {
         _channels = channels;
     }
 
-    function setCode(
-        bytes8 code
-    )
-        external
-        onlyAdministrator
-    {
-        _code = code;
-    }
-
     function setEmail(
         string calldata email
     )
@@ -190,9 +180,19 @@ contract VASP is Initializable, Context, Ownable, AdministratorRole, IVASP {
 
     function code()
         external view
-        returns (bytes8)
+        returns (bytes4)
     {
-        return _code;
+        bytes memory addressBytes = abi.encodePacked(address(this));
+
+        bytes4 result;
+        bytes4 x = bytes4(0xff000000);
+
+        result ^= (x & addressBytes[16]) >> 0;
+        result ^= (x & addressBytes[17]) >> 8;
+        result ^= (x & addressBytes[18]) >> 16;
+        result ^= (x & addressBytes[19]) >> 24;
+
+        return result;
     }
 
     function email()
@@ -252,6 +252,13 @@ contract VASP is Initializable, Context, Ownable, AdministratorRole, IVASP {
         postCode = _postalAddress.postCode;
         town = _postalAddress.town;
         country = _postalAddress.country;
+    }
+
+    function signingKey()
+        external view
+        returns (string memory)
+    {
+        return _signingKey;
     }
 
     function trustedPeers(

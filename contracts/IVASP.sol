@@ -8,7 +8,7 @@ interface IVASP {
 
     function code()
         external view
-        returns (bytes8);
+        returns (bytes4);
 
     function email()
         external view
@@ -44,7 +44,7 @@ interface IVASP {
         returns (string memory streetName, string memory buildingNumber, string memory addressLine, string memory postCode, string memory town, string memory country);
 
 
-    function signingKeyKey()
+    function signingKey()
         external view
         returns (string memory);
 
